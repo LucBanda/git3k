@@ -1,1 +1,1 @@
-python gitk3k.py
+python git3k.py

@@ -4,6 +4,7 @@
 
 import sys, os, os.path, soya, soya.sphere
 import cerealizer
+from CursorCamera import ControlledCamera
 
 soya.init()
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
@@ -41,8 +42,9 @@ light.set_xyz(10.0, 10.0, 20.0)
 
 # Creates a camera.
 
-camera = soya.Camera(scene)
+camera = ControlledCamera(scene)
 camera.set_xyz(0.0, 10.0, 20)
+
 soya.set_root_widget(camera)
 
 soya.MainLoop(scene).main_loop()
