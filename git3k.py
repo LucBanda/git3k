@@ -24,15 +24,10 @@ light.set_xyz(10.0, 10.0, 20.0)
 # Creates a camera.
 
 camera = ControlledCamera(scene)
-camera.set_xyz(0.0, 10.0, 20)
+camera.set_xyz(0.0, 10.0, 20.0)
 
 
-repo = git.Repo('.')
-i=0
-for commit in repo.commits():
-	i+=1
-	Commit3D(scene, commit, camera).y = 2*i
-
+repo = Repo3D(scene, '.', camera)
 
 soya.set_root_widget(camera)
 
