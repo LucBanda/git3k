@@ -4,14 +4,20 @@ import git
 import math
 
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
-sphere_world = soya.World.load("sphere")		
-sphere_model = sphere_world.to_model()
+
+			
 
 class Commit3D(soya.Body, git.Commit):
-
+	sphere_white = soya.World.load("sphere_white").to_model()
+	sphere_blue = soya.World.load("sphere_blue").to_model() 	
+	sphere_yellow = soya.World.load("sphere_yellow").to_model()
+	sphere_red = soya.World.load("sphere_red").to_model()
+	sphere_green = soya.World.load("sphere_green").to_model()						
+	entering_zone = 0
 	def __init__(self, parent, commit, cam):
-		soya.Body.__init__(self, parent, sphere_model)
+		soya.Body.__init__(self, parent, self.sphere_white)
 		git.Commit.__init__(self, commit.repo, commit.id, commit.tree, commit.author, commit.authored_date, commit.message, commit.parents)
+		self.old_model=self.model
 		self.camera = cam
 
 	def begin_round(self):
@@ -22,23 +28,24 @@ class Commit3D(soya.Body, git.Commit):
 		for event in soya.process_event():
 			
 			if event[0] == soya.sdlconst.MOUSEMOTION:
-				me = self.camera.coord3d_to_2d(self.position())
-				
-				dist= math.sqrt(math.pow(me[0] - event[1],2)+math.pow(me[1] - event[2],2))
-				if dist < 20:
+				dist = self.distance_to(self.camera.coord2d_to_3d(event[1], event[2], self.z-self.camera.z))
+				if dist < self.get_sphere()[1]:
 					if self.entering_zone == 0:
 						print self.message
+						self.old_model = self.model
+						self.model = self.sphere_red
+
 					self.entering_zone = 1
-				elif dist > 20:
+				elif dist > self.get_sphere()[1] and self.entering_zone == 1:
 					self.entering_zone = 0
+					self.model = self.old_model
 
 
 class Repo3D(git.Repo):
 	def __init__(self, parent, path, cam):
 		git.Repo.__init__(self, path)
-#		soya.World.__init__(self, parent)
 		i=0
 		for commit in self.commits():
 			i+=1
-			Commit3D(parent, commit, cam).y = 2*i
+			Commit3D(parent, commit, cam).y = 30 - 3*i
 

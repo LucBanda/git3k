@@ -19,12 +19,12 @@ scene = soya.World()
 # Creates a light.
 
 light = soya.Light(scene)
-light.set_xyz(10.0, 10.0, 20.0)
+light.set_xyz(100.0, 100.0, 200.0)
 
 # Creates a camera.
 
 camera = ControlledCamera(scene)
-camera.set_xyz(0.0, 10.0, 20.0)
+camera.set_xyz(0.0, 20.0, 20.0)
 
 
 repo = Repo3D(scene, '.', camera)
