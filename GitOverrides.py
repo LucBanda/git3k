@@ -19,6 +19,12 @@ class Commit3D(soya.Body, git.Commit):
 		git.Commit.__init__(self, commit.repo, commit.id, commit.tree, commit.author, commit.authored_date, commit.message, commit.parents)
 		self.old_model=self.model
 		self.camera = cam
+		self.label = soya.label3d.Label3D(parent, self.message)
+
+	def set_y(self, y):
+		self.y = y
+		self.label.set_xyz(self.x, self.y+1.0, self.z)
+		self.label.size = 0.03
 
 	def begin_round(self):
 		soya.Body.begin_round(self)
@@ -41,11 +47,12 @@ class Commit3D(soya.Body, git.Commit):
 					self.model = self.old_model
 
 
-class Repo3D(git.Repo):
+class Repo3D(soya.World, git.Repo):
 	def __init__(self, parent, path, cam):
+		soya.World.__init__(self, parent)
 		git.Repo.__init__(self, path)
 		i=0
 		for commit in self.commits():
 			i+=1
-			Commit3D(parent, commit, cam).y = 30 - 3*i
+			Commit3D(self, commit, cam).set_y(30 - 3*i)
 
