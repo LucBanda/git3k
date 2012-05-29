@@ -84,16 +84,19 @@ class Repo3D(soya.World, git.Repo):
 				if commit.id == self.head.id:
 					tmpcmt.set_color('YELLOW')
 				i+=1
-			else : base = self.commit3d[commit.id]
+			else : 
+				base = self.commit3d[commit.id]
+				break
 
 		#redraw from base
 		if base != None:
-			i-=1
+			print base.commit.message
 			j=0
 			for commit in self.commits(branchname, max_count=100):
 				commit3d = self.commit3d[commit.id]
 				if commit3d.x == x:
-					commit3d.set_coords(x, base.y + (i-j+1) * 3.0)
+					print (i,j,commit.message)
+					commit3d.set_coords(x, base.y + (i-j)*3.0)
 					j+=1
 
 
