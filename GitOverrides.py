@@ -66,7 +66,7 @@ class Repo3D(soya.World, git.Repo):
 		j = 0
 		for head in self.heads:
 			j+= 1
-			x = 10*j
+			x = 20*j
 			if head.name != 'master':
 				self.draw_branch(head.name, x)
 			
