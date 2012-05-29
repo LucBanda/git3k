@@ -25,7 +25,10 @@ class Commit3D(soya.Body, git.Commit):
 		self.y = y
 		self.label.set_xyz(self.x, self.y+1.0, self.z)
 		self.label.size = 0.03
-
+	def set_color(self,color):
+		if color == 'YELLOW':
+			self.model = self.sphere_yellow
+		
 	def begin_round(self):
 		soya.Body.begin_round(self)
 		
@@ -37,7 +40,7 @@ class Commit3D(soya.Body, git.Commit):
 				dist = self.distance_to(self.camera.coord2d_to_3d(event[1], event[2], self.z-self.camera.z))
 				if dist < self.get_sphere()[1]:
 					if self.entering_zone == 0:
-						print self.message
+#						print self.message
 						self.old_model = self.model
 						self.model = self.sphere_red
 
@@ -48,11 +51,20 @@ class Commit3D(soya.Body, git.Commit):
 
 
 class Repo3D(soya.World, git.Repo):
+	commit3d = []
 	def __init__(self, parent, path, cam):
 		soya.World.__init__(self, parent)
 		git.Repo.__init__(self, path)
 		i=0
+		
 		for commit in self.commits():
+			self.commit3d.append(Commit3D(self, commit, cam))
+			self.commit3d[i].set_y(30 - 3*i)				
+			if self.commit3d[i].id == self.head().id:
+				self.commit3d[i].set_color('YELLOW')
 			i+=1
-			Commit3D(self, commit, cam).set_y(30 - 3*i)
+		
+	def head(self):
+		print self.git.log(n=1, pretty="format:%H")
+		return self.commit( self.git.log(n=1, pretty="format:%H"))
 

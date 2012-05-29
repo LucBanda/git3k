@@ -13,7 +13,7 @@ material = soya.Material()
 
 material.shininess = 64.0
 
-YELLOW = (0.0, 1.0, 1.0, 1.0)
+YELLOW = (1.0, 1.0, 0.0, 1.0)
 RED = (1.0, 0.0, 0.0, 1.0)
 GREEN = (0.0,1.0, 0.0,1.0)
 BLUE = (0.0,0.0,1.0,1.0)
