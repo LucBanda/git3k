@@ -23,7 +23,7 @@ class Commit3D(soya.Body, git.Commit):
 
 	def set_y(self, y):
 		self.y = y
-		self.label.set_xyz(self.x, self.y+1.0, self.z)
+		self.label.set_xyz(self.x, self.y+0.5, self.z)
 		self.label.size = 0.03
 	def set_color(self,color):
 		if color == 'YELLOW':
@@ -52,19 +52,20 @@ class Commit3D(soya.Body, git.Commit):
 
 class Repo3D(soya.World, git.Repo):
 	commit3d = []
+
 	def __init__(self, parent, path, cam):
 		soya.World.__init__(self, parent)
 		git.Repo.__init__(self, path)
+		self.head = self.commit( self.git.log(n=1, pretty="format:%H"))
 		i=0
 		
 		for commit in self.commits():
 			self.commit3d.append(Commit3D(self, commit, cam))
 			self.commit3d[i].set_y(30 - 3*i)				
-			if self.commit3d[i].id == self.head().id:
+			if self.commit3d[i].id == self.head.id:
 				self.commit3d[i].set_color('YELLOW')
 			i+=1
 		
 	def head(self):
-		print self.git.log(n=1, pretty="format:%H")
-		return self.commit( self.git.log(n=1, pretty="format:%H"))
+		return self.head
 

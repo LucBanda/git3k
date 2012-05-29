@@ -14,7 +14,7 @@ class ControlledCamera(soya.Camera):
 			if   event[0] == soya.sdlconst.KEYDOWN:
 				if   (event[1] == soya.sdlconst.K_r):
 #					soya._main.stop(self)
-					os.system("./git3k.sh&")
+					os.system("./git3k&")
 					sys.exit()
 				elif   (event[1] == soya.sdlconst.K_q) or (event[1] == soya.sdlconst.K_ESCAPE):
 					sys.exit()

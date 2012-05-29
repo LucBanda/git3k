@@ -5,18 +5,22 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 # Creates the scene.
 
-sphere = soya.sphere.Sphere()
-sphere.filename = "sphere_white"
-sphere.save()
-
 material = soya.Material()
 
 material.shininess = 64.0
 
-YELLOW = (1.0, 1.0, 0.0, 1.0)
-RED = (1.0, 0.0, 0.0, 1.0)
-GREEN = (0.0,1.0, 0.0,1.0)
-BLUE = (0.0,0.0,1.0,1.0)
+transparency = 0.7
+YELLOW = (1.0, 1.0, 0.0, transparency)
+RED = (1.0, 0.0, 0.0, transparency)
+GREEN = (0.0,1.0, 0.0, transparency)
+BLUE = (0.0,0.0,1.0, transparency)
+WHITE = (1.0,1.0,1.0,transparency)
+
+material.diffuse   = WHITE
+sphere = soya.sphere.Sphere(None, material)
+sphere.filename = "sphere_white"
+sphere.save()
+
 
 material.diffuse   = YELLOW
 sphere = soya.sphere.Sphere(None, material)
