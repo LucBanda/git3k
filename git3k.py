@@ -24,7 +24,7 @@ light.set_xyz(1000.0, 1000.0, 1000.0)
 # Creates a camera.
 
 camera = ControlledCamera(scene)
-camera.set_xyz(0.0, 20.0, 30.0)
+camera.set_xyz(0.0, 17.0, 30.0)
 
 
 repo = Repo3D(scene, '.', camera)
