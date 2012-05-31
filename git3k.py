@@ -7,7 +7,7 @@ import cerealizer
 from CursorCamera import ControlledCamera
 from GitOverrides import *
 
-soya.init()
+soya.init("git3k by Luc Banda", 1024, 780, 0)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 
@@ -24,7 +24,7 @@ light.set_xyz(1000.0, 1000.0, 1000.0)
 # Creates a camera.
 
 camera = ControlledCamera(scene)
-camera.set_xyz(7.0, -17.0, 30.0)
+camera.set_xyz(7.0, 17.0, 30.0)
 
 
 repo = Repo3D(scene, '.', camera)
