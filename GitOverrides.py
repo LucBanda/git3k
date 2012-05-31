@@ -72,7 +72,7 @@ class Repo3D(soya.World, git.Repo):
 		for head in self.branches:
 			print head
 			j+= 1
-			x = 20*j
+			x = 15*j
 			if head.name != 'master':
 				self.draw_branch(head.commit, x)
 
@@ -95,5 +95,6 @@ class Repo3D(soya.World, git.Repo):
 			next = self.draw_branch(parent_commit, x+10.0*i)
 			commit3d.set_coords(x, next.y + 3.0)
 			commit3d.append(next)
+			i+=1
 
 		return commit3d
