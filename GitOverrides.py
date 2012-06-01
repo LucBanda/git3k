@@ -16,22 +16,26 @@ class Commit3D(soya.Body):
 	parents = []
 	entering_zone = 0
 	faces = []
-	def __init__(self, parent, commit, cam):
-		soya.Body.__init__(self, parent, self.sphere_white)
+
+	def __init__(self, parent, commit, cam, faces):
+		soya.Body.__init__(self,parent, self.sphere_white)
+		self.faces_world = faces
 		self.commit = commit
 		self.old_model=self.model
 		self.camera = cam
 		self.label = soya.label3d.Label3D(parent, self.commit.message)
-		self.vertex = soya.Vertex(parent, self.x, self.y, self.z)
-	
+		self.vertex1 = soya.Vertex(self.faces_world, self.x-0.1, self.y-0.1, self.z-0.1)
+		self.vertex2 = soya.Vertex(self.faces_world, self.x+0.1, self.y+0.1, self.z+0.1)
+
 	def append(self, parentcmt):
 		self.parents.append(parentcmt)
-		self.faces.append(soya.Face(self.parent, [self.vertex, parentcmt.vertex]))
+		self.faces.append(soya.Face(self.faces_world, [self.vertex1,self.vertex2,  parentcmt.vertex1, parentcmt.vertex2]))
 
 	def set_coords(self, x, y):
 		self.y = y
 		self.x = x
-		self.vertex.set_xyz(x,y,self.z)
+		self.vertex1.set_xyz(x,y,self.z)
+		self.vertex2.set_xyz(x+0.1,y+0.1,self.z+0.1)
 		self.label.set_xyz(self.x, self.y+0.5, self.z)
 		self.label.size = 0.04
 		
@@ -59,28 +63,30 @@ class Commit3D(soya.Body):
 					self.model = self.old_model
 
 class Repo3D(soya.World, git.Repo):
-	commit3d = {}
 
-	def __init__(self, parent, path, cam):
+	def __init__(self, parent, path, cam, centerpos):
+		self.commit3d = {}
+		self.world = soya.World()
+		print self.commit3d
 		soya.World.__init__(self, parent)
 		git.Repo.__init__(self, path)
 		self.cam = cam
 		self.head = self.commit( self.git.log(n=1, pretty="format:%H"))
 		
-		self.draw_branch(self.commit('master'), 0)
+		self.draw_branch(self.commit('master'), centerpos)
 		j = 0
 		for head in self.branches:
-			print head
 			j+= 1
-			x = 15*j
+			x = 15*j+centerpos
 			if head.name != 'master':
 				self.draw_branch(head.commit, x)
 
 		self.commit3d[self.head.id].set_color('YELLOW')
+		soya.Body(parent, self.world.to_model())
 			
 
 	def draw_branch(self, top, x):
-		commit3d = Commit3D(self.parent, top, self.cam)
+		commit3d = Commit3D(self.parent, top, self.cam, self.world)
 		self.commit3d[top.id] = commit3d
 		if len(top.parents) == 0:
 			commit3d.set_coords(x, 0.0)
@@ -92,7 +98,7 @@ class Repo3D(soya.World, git.Repo):
 				commit3d.append(base)
 				commit3d.set_coords(x, base.y + 3.0)
 				continue
-			next = self.draw_branch(parent_commit, x+10.0*i)
+			next = self.draw_branch(parent_commit, x+15.0*i)
 			commit3d.set_coords(x, next.y + 3.0)
 			commit3d.append(next)
 			i+=1

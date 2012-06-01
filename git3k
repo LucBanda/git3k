@@ -12,24 +12,25 @@ soya.init("git3k by Luc Banda", 1024, 780, 0)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 
-# Creates the scene.
+# Creates a camera.
 
-scene = soya.World()
+display = soya.World()
+camera = ControlledCamera(display)
+camera.back = 1000.0
 
+camera.set_xyz(7.0, 17.0, 30.0)
 
 # Creates a light.
 
-light = soya.Light(scene)
-light.set_xyz(1000.0, 1000.0, 1000.0)
+light = soya.Light(display)
+light.set_xyz(100000.0, 100000.0, 100000.0)
 
-# Creates a camera.
+for tree in range(10):
+	Repo3D(display, '.', camera, tree*100)
 
-camera = ControlledCamera(scene)
-camera.set_xyz(7.0, 17.0, 30.0)
+	print tree
 
-
-repo = Repo3D(scene, '.', camera)
 
 soya.set_root_widget(camera)
 
-soya.MainLoop(scene).main_loop()
+soya.MainLoop(display).main_loop()

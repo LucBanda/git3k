@@ -32,7 +32,7 @@ class ControlledCamera(soya.Camera):
 				elif event[1] == soya.sdlconst.K_DOWN:  self.down_key_down  = 0
 				elif event[1] == soya.sdlconst.K_PAGEDOWN:  self.down_key_page_down  = 0
 				elif event[1] == soya.sdlconst.K_PAGEUP:  self.down_key_page_up  = 0
-		proportion = 0.2
+		proportion = 1
 		if (self.left_key_down == 1):		self.x -= proportion
 		if (self.right_key_down == 1):		self.x += proportion
 		if (self.up_key_down == 1):		self.y += proportion
