@@ -4,6 +4,7 @@ class ControlledCamera(soya.Camera):
 	def __init__(self, parent):
 		soya.Camera.__init__(self, parent)
 		self.left_key_down = self.right_key_down = self.up_key_down = self.down_key_page_down  = self.down_key_page_up  =self.down_key_down = 0
+		self.proportion = 1
 		
 	def begin_round(self):
 		soya.Camera.begin_round(self)
@@ -32,13 +33,17 @@ class ControlledCamera(soya.Camera):
 				elif event[1] == soya.sdlconst.K_DOWN:  self.down_key_down  = 0
 				elif event[1] == soya.sdlconst.K_PAGEDOWN:  self.down_key_page_down  = 0
 				elif event[1] == soya.sdlconst.K_PAGEUP:  self.down_key_page_up  = 0
-		proportion = 1
-		if (self.left_key_down == 1):		self.x -= proportion
-		if (self.right_key_down == 1):		self.x += proportion
-		if (self.up_key_down == 1):		self.y += proportion
-		if (self.down_key_down == 1):		self.y -= proportion
-		if (self.down_key_page_down == 1):	self.z += proportion
-		if (self.down_key_page_up == 1):	self.z -= proportion
+				elif event[1] == soya.sdlconst.K_KP_PLUS:
+					self.proportion += 0.1
+				elif event[1] == soya.sdlconst.K_KP_MINUS:
+					self.proportion -= 0.1
+
+		if (self.left_key_down == 1):		self.x -= self.proportion
+		if (self.right_key_down == 1):		self.x += self.proportion
+		if (self.up_key_down == 1):		self.y += self.proportion
+		if (self.down_key_down == 1):		self.y -= self.proportion
+		if (self.down_key_page_down == 1):	self.z += self.proportion
+		if (self.down_key_page_up == 1):	self.z -= self.proportion
 
 
 #			if event[0] == soya.sdlconst.BUTTON_WHEELDOWN:

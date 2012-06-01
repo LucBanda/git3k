@@ -25,10 +25,7 @@ camera.set_xyz(7.0, 17.0, 30.0)
 light = soya.Light(display)
 light.set_xyz(100000.0, 100000.0, 100000.0)
 
-for tree in range(10):
-	Repo3D(display, '.', camera, tree*100)
-
-	print tree
+Repo3D(display, '.', camera, 0.0)
 
 
 soya.set_root_widget(camera)

@@ -43,7 +43,7 @@ class Commit3D(soya.Body):
 		if color == 'YELLOW':
 			self.model = self.sphere_yellow
 	
-	def begin_round(self):
+	def begin_round_spare(self):
 		soya.Body.begin_round(self)
 		
 		# Processes the events
