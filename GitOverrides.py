@@ -67,7 +67,6 @@ class Repo3D(soya.World, git.Repo):
 	def __init__(self, parent, path, cam, centerpos):
 		self.commit3d = {}
 		self.world = soya.World()
-		print self.commit3d
 		soya.World.__init__(self, parent)
 		git.Repo.__init__(self, path)
 		self.cam = cam

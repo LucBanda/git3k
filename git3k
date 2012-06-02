@@ -15,7 +15,8 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 # Creates a camera.
 
 display = soya.World()
-camera = ControlledCamera(display)
+camera = ControlledCamera(display, soya.Point(display, 0.0,0.0,0.0))
+
 camera.back = 1000.0
 
 camera.set_xyz(7.0, 17.0, 30.0)
