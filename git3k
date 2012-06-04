@@ -19,14 +19,14 @@ camera = ControlledCamera(display, soya.Point(display, 0.0,0.0,0.0))
 
 camera.back = 1000.0
 
-camera.set_xyz(7.0, 17.0, 30.0)
-
 # Creates a light.
 
 light = soya.Light(display)
 light.set_xyz(100000.0, 100000.0, 100000.0)
 
-Repo3D(display, '.', camera, 0.0)
+repo = Repo3D(display, '.', camera, 0.0)
+
+camera.set_xyz(repo.head3d.x, repo.head3d.y, 30.0)
 
 
 soya.set_root_widget(camera)

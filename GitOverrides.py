@@ -37,7 +37,7 @@ class Commit3D(soya.Body):
 		self.vertex1.set_xyz(x,y,self.z)
 		self.vertex2.set_xyz(x+0.1,y+0.1,self.z+0.1)
 		self.label.set_xyz(self.x, self.y+0.5, self.z)
-		self.label.size = 0.04
+		self.label.size = 0.02
 		
 	def set_color(self,color, permanent = 0):
 		if color == 'RESTORE':
@@ -72,7 +72,8 @@ class Repo3D(soya.World, git.Repo):
 			if head.name != 'master':
 				self.draw_branch(head.commit, x)
 
-		self.commit3d[self.head.id].set_color('YELLOW', 1)
+		self.head3d = self.commit3d[self.head.id]
+		self.head3d.set_color('YELLOW', 1)
 		soya.Body(parent, self.world.to_model())
 			
 
