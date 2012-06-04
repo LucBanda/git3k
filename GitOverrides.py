@@ -39,11 +39,9 @@ class Commit3D(soya.Body):
 		self.label.set_xyz(self.x, self.y+0.5, self.z)
 		self.label.size = 0.04
 		
-	def set_color(self,color):
+	def set_color(self,color, permanent = 0):
 		if color == 'RESTORE':
-			print "restoring"
 			self.model = self.old_model
-		self.old_model = self.model
 		if color == 'YELLOW':
 			self.model = self.sphere_yellow
 		elif color == 'RED':
@@ -52,30 +50,10 @@ class Commit3D(soya.Body):
 			self.model = self.sphere_blue
 		elif color == 'GREEN':
 			self.model = self.sphere_green
+		if permanent == 1:
+			self.old_model = self.model
 
-
-			
 	
-	def begin_round_spare(self):
-		soya.Body.begin_round(self)
-		
-		# Processes the events
-		for event in soya.process_event():
-			
-			if event[0] == soya.sdlconst.MOUSEMOTION:
-				dist = 0.0
-#				dist = self.distance_to(self.camera.coord2d_to_3d(event[1], event[2], self.z-self.camera.z))
-				if dist < self.get_sphere()[1]:
-					if self.entering_zone == 0:
-						print self.commit.message
-						self.old_model = self.model
-						self.model = self.sphere_red
-
-					self.entering_zone = 1
-				elif dist > self.get_sphere()[1] and self.entering_zone == 1:
-					self.entering_zone = 0
-					self.model = self.old_model
-
 class Repo3D(soya.World, git.Repo):
 
 	def __init__(self, parent, path, cam, centerpos):
@@ -94,7 +72,7 @@ class Repo3D(soya.World, git.Repo):
 			if head.name != 'master':
 				self.draw_branch(head.commit, x)
 
-		self.commit3d[self.head.id].set_color('YELLOW')
+		self.commit3d[self.head.id].set_color('YELLOW', 1)
 		soya.Body(parent, self.world.to_model())
 			
 
