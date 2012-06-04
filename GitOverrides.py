@@ -40,8 +40,21 @@ class Commit3D(soya.Body):
 		self.label.size = 0.04
 		
 	def set_color(self,color):
+		if color == 'RESTORE':
+			print "restoring"
+			self.model = self.old_model
+		self.old_model = self.model
 		if color == 'YELLOW':
 			self.model = self.sphere_yellow
+		elif color == 'RED':
+			self.model = self.sphere_red
+		elif color == 'BLUE':
+			self.model = self.sphere_blue
+		elif color == 'GREEN':
+			self.model = self.sphere_green
+
+
+			
 	
 	def begin_round_spare(self):
 		soya.Body.begin_round(self)
@@ -50,7 +63,8 @@ class Commit3D(soya.Body):
 		for event in soya.process_event():
 			
 			if event[0] == soya.sdlconst.MOUSEMOTION:
-				dist = self.distance_to(self.camera.coord2d_to_3d(event[1], event[2], self.z-self.camera.z))
+				dist = 0.0
+#				dist = self.distance_to(self.camera.coord2d_to_3d(event[1], event[2], self.z-self.camera.z))
 				if dist < self.get_sphere()[1]:
 					if self.entering_zone == 0:
 						print self.commit.message

@@ -9,7 +9,7 @@ class ControlledCamera(soya.Camera):
 		self.proportion = 1
 		self.move = 0
 		self.points_to = center
-
+		self.old_impact = None
 	def begin_round(self):
 		soya.Camera.begin_round(self)
 		
@@ -46,6 +46,7 @@ class ControlledCamera(soya.Camera):
 				elif event[1] == soya.sdlconst.BUTTON_MIDDLE:
 					print event
 					point = self.coord2d_to_3d(event[2], event[3], -5.0)
+
 					self.points_to.y = point.y
 					self.points_to.x = point.x
 					
@@ -67,12 +68,32 @@ class ControlledCamera(soya.Camera):
 					print (event[3],event[4])
 					self.add_vector(soya.Vector(self,  - event[3]/10.0, event[4]/10.0, 0.0))
 
-				if self.rotate == 1:
+				elif self.rotate == 1:
 					self.add_vector(soya.Vector(self,  event[3], -event[4], 0.0))
 					print self.points_to
 					self.look_at(self.points_to)
-			
-			
+				else:
+					# The event give us the 2D mouse coordinates in pixel. The camera.coord2d_to_3d
+					# convert these 2D pixel coordinates into a soy.Point object.
+				
+					mouse = self.coord2d_to_3d(event[1], event[2])
+				
+					# Performs a raypicking, starting at the camera and going toward the mouse.
+					# The vector_to method returns the vector between 2 positions.
+					# This raypicking grabs anything that is under the mouse. Raypicking returns
+					# None if nothing is encountered, or a (impact, normal) tuple, where impact is the
+					# position of the impact and normal is the normal vector at this position.
+					# The object encountered is impact.parent ; here, we don't need the normal.
+				
+					result = self.parent.raypick(self, self.vector_to(mouse))
+					print result
+					if result:
+						self.impact, normal = result
+						self.impact.parent.set_color('RED')
+						self.old_impact = self.impact.parent
+					elif self.old_impact:	
+						self.old_impact.set_color('RESTORE')
+						self.old_impact = None
 
 
 				
