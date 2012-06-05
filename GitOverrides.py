@@ -17,12 +17,12 @@ class Commit3D(soya.Body):
 	entering_zone = 0
 	faces = []
 
-	def __init__(self, parent, commit, cam, faces):
+	def __init__(self, parent, commit, faces):
 		soya.Body.__init__(self,parent, self.sphere_white)
 		self.faces_world = faces
 		self.commit = commit
 		self.old_model=self.model
-		self.camera = cam
+
 		self.label = soya.label3d.Label3D(parent, self.commit.message)
 		self.vertex1 = soya.Vertex(self.faces_world, self.x-0.1, self.y-0.1, self.z-0.1)
 		self.vertex2 = soya.Vertex(self.faces_world, self.x+0.1, self.y+0.1, self.z+0.1)
@@ -53,46 +53,97 @@ class Commit3D(soya.Body):
 		if permanent == 1:
 			self.old_model = self.model
 
+class Branch3D(soya.World):
 	
+	def __init__(self, parent, x, name = ""):
+		soya.World.__init__(self, parent)
+		self.x = x
+		self.commit3d=[]
+		self.bornes_y=(0.0,0.0)
+		self.name = name
+	
+	def set_name(self, name):
+		self.name = name
+
+	def append(self, commit3d):
+		self.commit3d.append(commit3d)
+
+	def update_bornes(self):
+		if len(self.commit3d) != 0:
+			self.bornes_y = (self.commit3d[0], self.commit3d[len(self.commit3d)-1])
+	
+	def set_x(self, x):
+		self.x = x
+		for commit3d in self.commit3d:
+			commit3d.set_coords(x, commit3d.y)
+
+	def overlaps(self, branch):
+		if branch.x != self.x or branch != self: return False
+		for commit1 in branch.commit3d:
+			for commit2 in self.commit3d:
+				if commit1.y == commit2.y:
+					return True
+		return False
+
+
 class Repo3D(soya.World, git.Repo):
 
-	def __init__(self, parent, path, cam, centerpos):
-		self.commit3d = {}
-		self.world = soya.World()
+	def __init__(self, parent, path, centerpos):
 		soya.World.__init__(self, parent)
 		git.Repo.__init__(self, path)
-		self.cam = cam
-		self.head = self.commit( self.git.log(n=1, pretty="format:%H"))
-		
-		self.draw_branch(self.commit('master'), centerpos)
+
+		self.commit3d = {}
+		self.faces = soya.World()
+		branch = Branch3D(self, centerpos, "master")
+		self.branches3d = [branch]
+		self.draw_branch(self.commit('master'), branch)
 		j = 0
 		for head in self.branches:
 			j+= 1
 			x = 15*j+centerpos
 			if head.name != 'master':
-				self.draw_branch(head.commit, x)
+				print head.name
+				branch =Branch3D(self, x, head.name)
+				for branchiter in self.branches3d:
+					if branch.overlaps(branchiter):
+						branch.set_x(branch.x+15.0)
+				self.branches3d.append(branch)
+				self.draw_branch(head.commit, branch)
 
-		self.head3d = self.commit3d[self.head.id]
+		self.head3d = self.commit3d[self.commit( self.git.log(n=1, pretty="format:%H")).id]
 		self.head3d.set_color('YELLOW', 1)
-		soya.Body(parent, self.world.to_model())
+		soya.Body(parent, self.faces.to_model())
 			
 
-	def draw_branch(self, top, x):
-		commit3d = Commit3D(self.parent, top, self.cam, self.world)
+	def draw_branch(self, top, branch):
+		commit3d = Commit3D(self.parent, top, self.faces)
+		branch.append(commit3d)
 		self.commit3d[top.id] = commit3d
 		if len(top.parents) == 0:
-			commit3d.set_coords(x, 0.0)
+			commit3d.set_coords(branch.x, 0.0)
+			branch.update_bornes()
 			return commit3d
 		i=0
 		for parent_commit in top.parents:
 			if parent_commit.id in self.commit3d:
 				base = self.commit3d[parent_commit.id]
 				commit3d.append(base)
-				commit3d.set_coords(x, base.y + 3.0)
+				commit3d.set_coords(branch.x, base.y + 3.0)
+				branch.update_bornes()
+				for branchiter in self.branches3d:
+					if branch.overlaps(branchiter):
+						branch.set_x(branch.x+15.0)
+
 				continue
-			next = self.draw_branch(parent_commit, x+15.0*i)
-			commit3d.set_coords(x, next.y + 3.0)
+			newbranch=branch
+			if i != 0:
+				newbranch = Branch3D(self, newbranch.x+15.0*i)
+				self.branches3d.append(newbranch)
+
+			next = self.draw_branch(parent_commit, newbranch)
+			commit3d.set_coords(branch.x, next.y + 3.0)
 			commit3d.append(next)
 			i+=1
+
 
 		return commit3d

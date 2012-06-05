@@ -24,7 +24,7 @@ camera.back = 1000.0
 light = soya.Light(display)
 light.set_xyz(100000.0, 100000.0, 100000.0)
 
-repo = Repo3D(display, '.', camera, 0.0)
+repo = Repo3D(display, '.', 0.0)
 
 camera.set_xyz(repo.head3d.x, repo.head3d.y, 30.0)
 
