@@ -61,12 +61,15 @@ class Branch3D(soya.World):
 		self.commit3d=[]
 		self.bornes_y=(0.0,0.0)
 		self.name = name
-	
+		self.label = soya.label3d.Label3D(parent, self.name)
+		self.label.size = 0.1
+		
 	def set_name(self, name):
 		self.name = name
 
 	def append(self, commit3d):
 		self.commit3d.append(commit3d)
+		commit3d.x = self.x
 
 	def update_bornes(self):
 		if len(self.commit3d) != 0:
@@ -78,12 +81,21 @@ class Branch3D(soya.World):
 			commit3d.set_coords(x, commit3d.y)
 
 	def overlaps(self, branch):
-		if branch.x != self.x or branch != self: return False
+		if branch.x != self.x or branch == self: return False
 		for commit1 in branch.commit3d:
 			for commit2 in self.commit3d:
 				if commit1.y == commit2.y:
 					return True
 		return False
+	
+	def update(self):
+		self.label.set_xyz(self.x, self.commit3d[0].y+3, self.z)
+		
+	def __str__(self):
+		ret ="BRANCH %s at %d\n" %(self.name, self.x)
+		for commit in self.commit3d:
+			ret = ret + commit.commit.message + "\n"
+		return ret
 
 
 class Repo3D(soya.World, git.Repo):
@@ -100,21 +112,25 @@ class Repo3D(soya.World, git.Repo):
 		j = 0
 		for head in self.branches:
 			j+= 1
-			x = 15*j+centerpos
+			x = centerpos
 			if head.name != 'master':
 				print head.name
 				branch =Branch3D(self, x, head.name)
+				self.branches3d.append(branch)
+				self.draw_branch(head.commit, branch)
 				for branchiter in self.branches3d:
 					if branch.overlaps(branchiter):
 						branch.set_x(branch.x+15.0)
-				self.branches3d.append(branch)
-				self.draw_branch(head.commit, branch)
+
 
 		self.head3d = self.commit3d[self.commit( self.git.log(n=1, pretty="format:%H")).id]
 		self.head3d.set_color('YELLOW', 1)
 		soya.Body(parent, self.faces.to_model())
-			
 
+		for branchiter in self.branches3d:
+			branchiter.update()
+
+	
 	def draw_branch(self, top, branch):
 		commit3d = Commit3D(self.parent, top, self.faces)
 		branch.append(commit3d)
@@ -122,18 +138,15 @@ class Repo3D(soya.World, git.Repo):
 		if len(top.parents) == 0:
 			commit3d.set_coords(branch.x, 0.0)
 			branch.update_bornes()
+			
 			return commit3d
 		i=0
 		for parent_commit in top.parents:
 			if parent_commit.id in self.commit3d:
 				base = self.commit3d[parent_commit.id]
 				commit3d.append(base)
-				commit3d.set_coords(branch.x, base.y + 3.0)
+				commit3d.set_coords(branch.x, max(base.y + 3.0, commit3d.y))
 				branch.update_bornes()
-				for branchiter in self.branches3d:
-					if branch.overlaps(branchiter):
-						branch.set_x(branch.x+15.0)
-
 				continue
 			newbranch=branch
 			if i != 0:
@@ -141,9 +154,11 @@ class Repo3D(soya.World, git.Repo):
 				self.branches3d.append(newbranch)
 
 			next = self.draw_branch(parent_commit, newbranch)
-			commit3d.set_coords(branch.x, next.y + 3.0)
+			commit3d.set_coords(branch.x, max(next.y + 3.0, commit3d.y))
 			commit3d.append(next)
 			i+=1
-
+		for branchiter in self.branches3d:
+			if branch.overlaps(branchiter):
+				branch.set_x(branch.x+15.0)
 
 		return commit3d
