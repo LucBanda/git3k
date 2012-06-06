@@ -62,14 +62,14 @@ class Branch3D(soya.World):
 		self.bornes_y=(0.0,0.0)
 		self.name = name
 		self.label = soya.label3d.Label3D(parent, self.name)
-		self.label.size = 0.1
-		
+		self.label.size = 0.07
+		parent.branches3d.append(self)
+
 	def set_name(self, name):
 		self.name = name
 
 	def append(self, commit3d):
 		self.commit3d.append(commit3d)
-		commit3d.x = self.x
 
 	def update_bornes(self):
 		if len(self.commit3d) != 0:
@@ -106,17 +106,15 @@ class Repo3D(soya.World, git.Repo):
 
 		self.commit3d = {}
 		self.faces = soya.World()
+		self.branches3d = []
 		branch = Branch3D(self, centerpos, "master")
-		self.branches3d = [branch]
 		self.draw_branch(self.commit('master'), branch)
 		j = 0
 		for head in self.branches:
 			j+= 1
 			x = centerpos
 			if head.name != 'master':
-				print head.name
 				branch =Branch3D(self, x, head.name)
-				self.branches3d.append(branch)
 				self.draw_branch(head.commit, branch)
 				for branchiter in self.branches3d:
 					if branch.overlaps(branchiter):
@@ -129,6 +127,7 @@ class Repo3D(soya.World, git.Repo):
 
 		for branchiter in self.branches3d:
 			branchiter.update()
+		
 
 	
 	def draw_branch(self, top, branch):
@@ -150,8 +149,7 @@ class Repo3D(soya.World, git.Repo):
 				continue
 			newbranch=branch
 			if i != 0:
-				newbranch = Branch3D(self, newbranch.x+15.0*i)
-				self.branches3d.append(newbranch)
+				newbranch = Branch3D(self, newbranch.x)
 
 			next = self.draw_branch(parent_commit, newbranch)
 			commit3d.set_coords(branch.x, max(next.y + 3.0, commit3d.y))
