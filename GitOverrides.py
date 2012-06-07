@@ -107,14 +107,28 @@ class Repo3D(soya.World, git.Repo):
 		self.commit3d = {}
 		self.faces = soya.World()
 		self.branches3d = []
-		branch = Branch3D(self, centerpos, "master")
+		self.centerpos = centerpos
+		self.draw()
+
+	def reload(self):
+		print "reload"
+		self.draw()
+
+	def get_branch_byname(self, pos, branchname):
+		for br in self.branches3d:
+			if branchname == br.name:
+				return br
+		return Branch3D(self, pos, branchname)
+
+	def draw(self):
+		branch = self.get_branch_byname(self.centerpos, "master")
 		self.draw_branch(self.commit('master'), branch)
 		j = 0
 		for head in self.branches:
 			j+= 1
-			x = centerpos
+			x = self.centerpos
 			if head.name != 'master':
-				branch =Branch3D(self, x, head.name)
+				branch = self.get_branch_byname(x, head.name)
 				self.draw_branch(head.commit, branch)
 				for branchiter in self.branches3d:
 					if branch.overlaps(branchiter):
@@ -123,7 +137,7 @@ class Repo3D(soya.World, git.Repo):
 
 		self.head3d = self.commit3d[self.commit( self.git.log(n=1, pretty="format:%H")).id]
 		self.head3d.set_color('YELLOW', 1)
-		soya.Body(parent, self.faces.to_model())
+		soya.Body(self.parent, self.faces.to_model())
 
 		for branchiter in self.branches3d:
 			branchiter.update()
@@ -160,3 +174,14 @@ class Repo3D(soya.World, git.Repo):
 				branch.set_x(branch.x+15.0)
 
 		return commit3d
+
+	def begin_round(self):
+		soya.World.begin_round(self)
+		
+		# Processes the events
+		
+		for event in soya.process_event():
+			if   event[0] == soya.sdlconst.KEYDOWN:
+				if   (event[1] == soya.sdlconst.K_F5):
+					self.reload()
+					
