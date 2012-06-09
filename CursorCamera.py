@@ -1,5 +1,6 @@
 import sys, soya, soya.sdlconst
 import os
+import GitOverrides
 
 class ControlledCamera(soya.Camera):
 	def __init__(self, parent, center):
@@ -72,11 +73,12 @@ class ControlledCamera(soya.Camera):
 				
 					result = self.parent.raypick(self, self.vector_to(mouse))
 					if result:
-						self.impact, normal = result
-						if self.old_impact and self.impact != self.old_impact:
-							self.old_impact.set_color('RESTORE')
-						self.impact.parent.set_color('RED')
-						self.old_impact = self.impact.parent
+						impact, normal = result
+						if type(impact.parent) == GitOverrides.Commit3D:
+							if self.old_impact and impact != self.old_impact:
+								self.old_impact.set_color('RESTORE')
+							impact.parent.set_color('RED')
+							self.old_impact = impact.parent
 					elif self.old_impact:
 						self.old_impact.set_color('RESTORE')
 						self.old_impact = None

@@ -5,13 +5,33 @@ import git
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 			
+class GitLabel(soya.World):
+	label_green = soya.World.load("label_green")
+	label_yellow = soya.World.load("label_yellow")
+	
+	def __init__(self, parent, name, world):
+		soya.World.__init__(self, parent)
+		self.label = soya.label3d.Label3D(self, name)
+		self.label.size = 0.03
+		self.label.set_xyz(3.5, 0.0, 1.0)
+		self.label.lit = 0
+		self.body = soya.Body(self, world.to_model())
+		
+class BranchLabel(GitLabel):
+	
+	def __init__(self, parent, name):
+		GitLabel.__init__(self, parent, name, self.label_green)
 
+class TagLabel(GitLabel):
+	def __init__(self, parent, name):
+		GitLabel.__init__(self, parent, name, self.label_yellow)
+		
 class Commit3D(soya.Body):
 	sphere_white = soya.World.load("sphere_white").to_model()
-	sphere_blue = soya.World.load("sphere_blue").to_model() 	
+	sphere_blue = soya.World.load("sphere_blue").to_model()
 	sphere_yellow = soya.World.load("sphere_yellow").to_model()
 	sphere_red = soya.World.load("sphere_red").to_model()
-	sphere_green = soya.World.load("sphere_green").to_model()	
+	sphere_green = soya.World.load("sphere_green").to_model()
 
 	parents = []
 	entering_zone = 0
@@ -36,7 +56,7 @@ class Commit3D(soya.Body):
 		self.x = x
 		self.vertex1.set_xyz(x,y,self.z)
 		self.vertex2.set_xyz(x+0.1,y+0.1,self.z+0.1)
-		self.label.set_xyz(self.x, self.y+0.5, self.z)
+		self.label.set_xyz(self.x, self.y, self.z)
 		self.label.size = 0.02
 		
 	def set_color(self,color, permanent = 0):
@@ -61,8 +81,8 @@ class Branch3D(soya.World):
 		self.commit3d=[]
 		self.bornes_y=(0.0,0.0)
 		self.name = name
-		self.label = soya.label3d.Label3D(parent, self.name)
-		self.label.size = 0.07
+		if name:
+			self.label = BranchLabel(parent, self.name)
 		parent.branches3d.append(self)
 
 	def set_name(self, name):
@@ -89,7 +109,8 @@ class Branch3D(soya.World):
 		return False
 	
 	def update(self):
-		self.label.set_xyz(self.x, self.commit3d[0].y+3, self.z)
+		if self.name:
+			self.label.set_xyz(self.x, self.commit3d[0].y, self.z)
 		
 	def __str__(self):
 		ret ="BRANCH %s at %d\n" %(self.name, self.x)
@@ -110,9 +131,9 @@ class Repo3D(soya.World, git.Repo):
 		self.centerpos = centerpos
 		self.draw()
 
-	def reload(self):
-		print "reload"
-		self.draw()
+	#~ def reload(self):
+		#~ print "reload"
+		#~ self.draw()
 
 	def get_branch_byname(self, pos, branchname):
 		for br in self.branches3d:
@@ -180,8 +201,8 @@ class Repo3D(soya.World, git.Repo):
 		
 		# Processes the events
 		
-		for event in soya.process_event():
-			if   event[0] == soya.sdlconst.KEYDOWN:
-				if   (event[1] == soya.sdlconst.K_F5):
-					self.reload()
+		#~ for event in soya.process_event():
+			#~ if   event[0] == soya.sdlconst.KEYDOWN:
+				#~ if   (event[1] == soya.sdlconst.K_F5):
+					#~ self.reload()
 					
