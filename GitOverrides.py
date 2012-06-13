@@ -12,7 +12,7 @@ class GitLabel(soya.World):
 	def __init__(self, parent, name, world):
 		soya.World.__init__(self, parent)
 		self.label = soya.label3d.Label3D(self, name)
-		self.label.size = 0.03
+		self.label.size = 0.04
 		self.label.set_xyz(3.5, 0.0, 1.0)
 		self.label.lit = 0
 		self.body = soya.Body(self, world.to_model())
@@ -131,10 +131,6 @@ class Repo3D(soya.World, git.Repo):
 		self.centerpos = centerpos
 		self.draw()
 
-	#~ def reload(self):
-		#~ print "reload"
-		#~ self.draw()
-
 	def get_branch_byname(self, pos, branchname):
 		for br in self.branches3d:
 			if branchname == br.name:
@@ -162,8 +158,16 @@ class Repo3D(soya.World, git.Repo):
 
 		for branchiter in self.branches3d:
 			branchiter.update()
-		
-
+		print self.commit3d
+		for tagname in self.git.tag("-l").split("\n"):
+				print tagname
+		self.tags3d = [(tagname, self.commit3d[self.commit(tagname).id]) for tagname in self.git.tag("-l").split("\n")]
+		self.labels = []
+		for tag in self.tags3d:
+			lab = TagLabel(self.parent, tag[0])
+			lab.set_xyz(tag[1].x, tag[1].y, tag[1].z)
+			self.labels.append(lab)
+			
 	
 	def draw_branch(self, top, branch):
 		commit3d = Commit3D(self.parent, top, self.faces)
