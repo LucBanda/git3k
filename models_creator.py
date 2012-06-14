@@ -85,5 +85,6 @@ def create_label( color):
 	
 create_label(GREEN)
 create_label(YELLOW)
+create_label(WHITE)
 
 

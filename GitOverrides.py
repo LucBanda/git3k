@@ -8,6 +8,7 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 class GitLabel(soya.World):
 	label_green = soya.World.load("label_green")
 	label_yellow = soya.World.load("label_yellow")
+	label_white = soya.World.load("label_white")
 	
 	def __init__(self, parent, name, world):
 		soya.World.__init__(self, parent)
@@ -25,6 +26,10 @@ class BranchLabel(GitLabel):
 class TagLabel(GitLabel):
 	def __init__(self, parent, name):
 		GitLabel.__init__(self, parent, name, self.label_yellow)
+		
+class RemoteLabel(GitLabel):
+	def __init__(self, parent, name):
+		GitLabel.__init__(self, parent, name, self.label_white)
 		
 class Commit3D(soya.Body):
 	sphere_white = soya.World.load("sphere_white").to_model()
@@ -81,8 +86,8 @@ class Branch3D(soya.World):
 		self.commit3d=[]
 		self.bornes_y=(0.0,0.0)
 		self.name = name
-		if name:
-			self.label = BranchLabel(parent, self.name)
+		#~ if name:
+			#~ self.label = BranchLabel(parent, self.name)
 		parent.branches3d.append(self)
 
 	def set_name(self, name):
@@ -108,9 +113,9 @@ class Branch3D(soya.World):
 					return True
 		return False
 	
-	def update(self):
-		if self.name:
-			self.label.set_xyz(self.x, self.commit3d[0].y, self.z)
+	#def update(self):
+		#~ if self.name:
+			#~ self.label.set_xyz(self.x, self.commit3d[0].y, self.z)
 		
 	def __str__(self):
 		ret ="BRANCH %s at %d\n" %(self.name, self.x)
@@ -156,15 +161,33 @@ class Repo3D(soya.World, git.Repo):
 		self.head3d.set_color('YELLOW', 1)
 		soya.Body(self.parent, self.faces.to_model())
 
-		for branchiter in self.branches3d:
-			branchiter.update()
+		#~ for branchiter in self.branches3d:
+			#~ branchiter.update()
 		print self.commit3d
 		for tagname in self.git.tag("-l").split("\n"):
 				print tagname
+		#creating tags
 		self.tags3d = [(tagname, self.commit3d[self.commit(tagname).id]) for tagname in self.git.tag("-l").split("\n")]
 		self.labels = []
 		for tag in self.tags3d:
 			lab = TagLabel(self.parent, tag[0])
+			lab.set_xyz(tag[1].x, tag[1].y, tag[1].z)
+			self.labels.append(lab)
+		for tagname in self.git.branch("-r").split("\n"):
+			print tagname
+		for tagname in self.git.branch("-l").split("\n"):
+			print tagname
+		#creating remote labels
+		self.remotes = [(tagname.lstrip(' *'), self.commit3d[self.commit(tagname.lstrip(' *')).id]) for tagname in self.git.branch("-r").split("\n")]
+		for tag in self.remotes:
+			lab = RemoteLabel(self.parent, tag[0])
+			lab.set_xyz(tag[1].x, tag[1].y, tag[1].z)
+			self.labels.append(lab)
+			
+		#creating branch labels
+		self.branchs = [(tagname.lstrip(' *'), self.commit3d[self.commit(tagname.lstrip(' *')).id]) for tagname in self.git.branch("-l").split("\n")]
+		for tag in self.branchs:
+			lab = BranchLabel(self.parent, tag[0])
 			lab.set_xyz(tag[1].x, tag[1].y, tag[1].z)
 			self.labels.append(lab)
 			
