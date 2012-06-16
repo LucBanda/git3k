@@ -19,13 +19,18 @@ long_line_column=72
 
 [files]
 current_page=0
-FILE_NAME_0=4551;Python;0;16;1;1;0;/home/luc/git3k/GitOverrides.py;0;4
+FILE_NAME_0=4701;Python;0;16;1;1;0;/home/luc/git3k/GitOverrides.py;0;4
 FILE_NAME_1=636;Python;0;16;1;1;0;/home/luc/git3k/CursorCamera.py;0;4
-FILE_NAME_2=372;Python;0;16;1;1;0;/home/luc/git3k/git3k;0;4
-FILE_NAME_3=628;Python;0;16;1;1;0;/home/luc/git3k/models_creator.py;0;4
+FILE_NAME_2=122;Python;0;16;1;1;0;/home/luc/git3k/git3k;0;4
+FILE_NAME_3=2590;Python;0;16;1;1;0;/home/luc/git3k/models_creator.py;0;4
 FILE_NAME_4=2017;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/modeling-3.py;0;4
 FILE_NAME_5=1771;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/modeling-2.py;0;4
-FILE_NAME_6=3779;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/modeling-1.py;0;4
+FILE_NAME_6=3786;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/modeling-1.py;0;4
+FILE_NAME_7=20;None;0;16;1;1;0;/home/luc/git3k/.gitignore;0;4
+FILE_NAME_8=1481;Python;0;16;1;1;0;/home/luc/git3k/gitpython/git/db.py;0;4
+FILE_NAME_9=506;Python;0;16;1;1;0;/home/luc/git3k/gitpython/git/repo/fun.py;0;4
+FILE_NAME_10=1266;Python;0;16;1;1;0;/home/luc/git3k/gitpython/git/repo/base.py;0;4
+FILE_NAME_11=5126;Python;0;16;1;1;0;/home/luc/git3k/gitpython/git/objects/commit.py;0;4
 
 [VTE]
 last_dir=/home/luc/git3k
