@@ -124,11 +124,11 @@ class Branch3D(soya.World):
 		return ret
 
 
-class Repo3D(soya.World, git.Repo):
+class Repo3D(soya.World):
 
 	def __init__(self, parent, path, centerpos):
 		soya.World.__init__(self, parent)
-		git.Repo.__init__(self, path)
+		self.repo = git.Repo(path)
 
 		self.commit3d = {}
 		self.faces = soya.World()
@@ -144,9 +144,9 @@ class Repo3D(soya.World, git.Repo):
 
 	def draw(self):
 		branch = self.get_branch_byname(self.centerpos, "master")
-		self.draw_branch(self.commit('master'), branch)
+		self.draw_branch(self.repo.commit('master'), branch)
 		j = 0
-		for head in self.branches:
+		for head in self.repo.branches:
 			j+= 1
 			x = self.centerpos
 			if head.name != 'master':
@@ -157,45 +157,14 @@ class Repo3D(soya.World, git.Repo):
 						branch.set_x(branch.x+15.0)
 
 
-		self.head3d = self.commit3d[self.commit( self.git.log(n=1, pretty="format:%H")).id]
+		self.head3d = self.commit3d[self.repo.commit( self.repo.head).hexsha]
 		self.head3d.set_color('YELLOW', 1)
-		soya.Body(self.parent, self.faces.to_model())
-
-		#~ for branchiter in self.branches3d:
-			#~ branchiter.update()
-		print self.commit3d
-		for tagname in self.git.tag("-l").split("\n"):
-				print tagname
-		#creating tags
-		self.tags3d = [(tagname, self.commit3d[self.commit(tagname).id]) for tagname in self.git.tag("-l").split("\n")]
-		self.labels = []
-		for tag in self.tags3d:
-			lab = TagLabel(self.parent, tag[0])
-			lab.set_xyz(tag[1].x, tag[1].y, tag[1].z)
-			self.labels.append(lab)
-		for tagname in self.git.branch("-r").split("\n"):
-			print tagname
-		for tagname in self.git.branch("-l").split("\n"):
-			print tagname
-		#creating remote labels
-		self.remotes = [(tagname.lstrip(' *'), self.commit3d[self.commit(tagname.lstrip(' *')).id]) for tagname in self.git.branch("-r").split("\n")]
-		for tag in self.remotes:
-			lab = RemoteLabel(self.parent, tag[0])
-			lab.set_xyz(tag[1].x, tag[1].y, tag[1].z)
-			self.labels.append(lab)
-			
-		#creating branch labels
-		self.branchs = [(tagname.lstrip(' *'), self.commit3d[self.commit(tagname.lstrip(' *')).id]) for tagname in self.git.branch("-l").split("\n")]
-		for tag in self.branchs:
-			lab = BranchLabel(self.parent, tag[0])
-			lab.set_xyz(tag[1].x, tag[1].y, tag[1].z)
-			self.labels.append(lab)
-			
+		soya.Body(self.parent, self.faces.to_model())			
 	
 	def draw_branch(self, top, branch):
 		commit3d = Commit3D(self.parent, top, self.faces)
 		branch.append(commit3d)
-		self.commit3d[top.id] = commit3d
+		self.commit3d[top.hexsha] = commit3d
 		if len(top.parents) == 0:
 			commit3d.set_coords(branch.x, 0.0)
 			branch.update_bornes()
@@ -203,8 +172,8 @@ class Repo3D(soya.World, git.Repo):
 			return commit3d
 		i=0
 		for parent_commit in top.parents:
-			if parent_commit.id in self.commit3d:
-				base = self.commit3d[parent_commit.id]
+			if parent_commit.hexsha in self.commit3d:
+				base = self.commit3d[parent_commit.hexsha]
 				commit3d.append(base)
 				commit3d.set_coords(branch.x, max(base.y + 3.0, commit3d.y))
 				branch.update_bornes()
