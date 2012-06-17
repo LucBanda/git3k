@@ -10,26 +10,30 @@ class GitLabel(soya.World):
 	label_yellow = soya.World.load("label_yellow")
 	label_white = soya.World.load("label_white")
 	
-	def __init__(self, parent, name, world):
+	def __init__(self, parent, name, world, commit):
 		soya.World.__init__(self, parent)
 		self.label = soya.label3d.Label3D(self, name)
 		self.label.size = 0.04
 		self.label.set_xyz(3.5, 0.0, 1.0)
 		self.label.lit = 0
 		self.body = soya.Body(self, world.to_model())
+		self.commit = commit
+		commit.appendlabel(self)
+		self.x = commit.x
+		self.y = commit.y
 		
 class BranchLabel(GitLabel):
 	
-	def __init__(self, parent, name):
-		GitLabel.__init__(self, parent, name, self.label_green)
+	def __init__(self, parent, name, commit):
+		GitLabel.__init__(self, parent, name, self.label_green, commit)
 
 class TagLabel(GitLabel):
-	def __init__(self, parent, name):
-		GitLabel.__init__(self, parent, name, self.label_yellow)
+	def __init__(self, parent, name, commit):
+		GitLabel.__init__(self, parent, name, self.label_yellow, commit)
 		
 class RemoteLabel(GitLabel):
-	def __init__(self, parent, name):
-		GitLabel.__init__(self, parent, name, self.label_white)
+	def __init__(self, parent, name, commit):
+		GitLabel.__init__(self, parent, name, self.label_white, commit)
 		
 def cmpchilds(x, y):
 	if x.size_of_queue > y.size_of_queue:
@@ -49,7 +53,7 @@ class Commit3D(soya.Body):
 	parents = []
 	entering_zone = 0
 	faces = []
-
+	
 	def __init__(self, parent, commit, faces):
 		soya.Body.__init__(self,parent, self.sphere_white)
 		self.size_of_queue = 0
@@ -60,11 +64,16 @@ class Commit3D(soya.Body):
 		self.label = soya.label3d.Label3D(parent, self.commit.message)
 		self.vertex1 = soya.Vertex(self.faces_world, self.x-0.1, self.y-0.1, self.z-0.1)
 		self.vertex2 = soya.Vertex(self.faces_world, self.x+0.1, self.y+0.1, self.z+0.1)
+		self.labels = []
 
 	def size(self):
 		return 3.0
 
-			
+	def appendlabel(self, label):
+		label.rotate_y(45.0 * len(self.labels))
+		self.labels.append(label)
+		
+		
 	def linkparents(self, commits):
 		for par in self.commit.parents:
 			parent = commits[par.hexsha]
@@ -124,14 +133,24 @@ class Repo3D(soya.World):
 		#identify head
 		self.head3d = self.commit3d[self.repo.commit(self.repo.head).hexsha]
 		self.head3d.set_color('YELLOW', 1)
-	
+		self.labels = []
+		for head in self.repo.heads:
+			self.labels.append(BranchLabel(self.parent,head.name, self.commit3d[head.commit.hexsha]))
+		for remote in self.repo.remotes:
+			if remote.name != "remote":
+				for remoteref in remote.refs:
+					self.labels.append(RemoteLabel(self.parent,remoteref.name, self.commit3d[remoteref.commit.hexsha]))
+		for tag in self.repo.tags:
+			self.labels.append(TagLabel(self.parent,tag.name, self.commit3d[tag.commit.hexsha]))
+		self.repo.remotes
+		self.repo.tags
+		
 	def depth(self, commit):
 		
 		if len(commit.childs) == 0:
 			commit.size_of_queue = 0
 		for child in commit.childs:
 			commit.size_of_queue = max(self.depth(child)+1, commit.size_of_queue)
-			print commit.size_of_queue
 		commit.sort_childs()
 		return commit.size_of_queue
 		
@@ -155,7 +174,6 @@ class Repo3D(soya.World):
 				
 		for commit in self.commit3d.itervalues():
 			commit.linkparents(self.commit3d)
-			print commit.commit.message
 	
 	def place_recurse(self, commit):
 		for child in commit.childs:
