@@ -31,6 +31,14 @@ class RemoteLabel(GitLabel):
 	def __init__(self, parent, name):
 		GitLabel.__init__(self, parent, name, self.label_white)
 		
+def cmpchilds(x, y):
+	if x.size_of_queue > y.size_of_queue:
+		return -1
+	elif x.size_of_queue < y.size_of_queue:
+		return 1
+	else:
+		return 0
+		
 class Commit3D(soya.Body):
 	sphere_white = soya.World.load("sphere_white").to_model()
 	sphere_blue = soya.World.load("sphere_blue").to_model()
@@ -44,7 +52,7 @@ class Commit3D(soya.Body):
 
 	def __init__(self, parent, commit, faces):
 		soya.Body.__init__(self,parent, self.sphere_white)
-		#self.size_of_queue = 0
+		self.size_of_queue = 0
 		self.faces_world = faces
 		self.commit = commit
 		self.old_model=self.model
@@ -55,14 +63,18 @@ class Commit3D(soya.Body):
 
 	def size(self):
 		return 3.0
-		
+
+			
 	def linkparents(self, commits):
 		for par in self.commit.parents:
 			parent = commits[par.hexsha]
-			parent.childs.insert(0,self)
+			parent.childs.append(self)
 			self.parents.append(parent)
 			self.faces.append(soya.Face(self.faces_world, [self.vertex1,self.vertex2,  parent.vertex1, parent.vertex2]))
-			
+	
+	def sort_childs(self):
+		self.childs.sort(cmpchilds)
+		
 	def set_coords(self, x, y):
 		self.y = y
 		self.x = x
@@ -103,6 +115,8 @@ class Repo3D(soya.World):
 		self.commitbyxy = {}
 		#creating objects
 		self.populate()
+		#setting depth
+		self.depth(self.initial)
 		#setting parents
 		self.grow_tree()
 		#display links
@@ -110,17 +124,25 @@ class Repo3D(soya.World):
 		#identify head
 		self.head3d = self.commit3d[self.repo.commit(self.repo.head).hexsha]
 		self.head3d.set_color('YELLOW', 1)
+	
+	def depth(self, commit):
+		
+		if len(commit.childs) == 0:
+			commit.size_of_queue = 0
+		for child in commit.childs:
+			commit.size_of_queue = max(self.depth(child)+1, commit.size_of_queue)
+			print commit.size_of_queue
+		commit.sort_childs()
+		return commit.size_of_queue
 		
 	def create_recurse(self, commit):
 		commit3d = Commit3D(self.parent, commit, self.faces)
 		if len(commit.parents) == 0:
 			self.initial = commit3d
-			#commit3d.size_of_queue = 0
 		for parent in commit.parents:
 			if not parent.hexsha in self.commit3d:
-				commit = self.create_recurse(parent)
-				#commit.size_of_queue = max(parent.size_of_queue + 1, commit.size_of_queue)
-				self.commit3d[parent.hexsha] = commit
+				commit= self.create_recurse(parent)
+				self.commit3d[parent.hexsha] = commit				
 		return commit3d
 		
 	def populate(self):
@@ -139,11 +161,10 @@ class Repo3D(soya.World):
 		for child in commit.childs:
 			child.set_coords(commit.x, commit.y + commit.size())
 			index_free= -10.0
-			direction = 1
 			while child.get_coords() in self.commitbyxy:
 				index_free += 10.0
 				child.set_coords(index_free, child.y)
-			child.set_label(child.commit.message + str(child.get_coords()))
+			child.set_label(child.commit.message + str(child.get_coords()) + "\n" + str(child.size_of_queue))
 			self.commitbyxy[child.get_coords()] = child
 			self.place_recurse(child)
 	
