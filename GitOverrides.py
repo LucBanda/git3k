@@ -9,12 +9,13 @@ class GitLabel(soya.World):
 	label_green = soya.World.load("label_green")
 	label_yellow = soya.World.load("label_yellow")
 	label_white = soya.World.load("label_white")
+	label_blue = soya.World.load("label_blue")
 	
 	def __init__(self, parent, name, world, commit):
 		soya.World.__init__(self, parent)
 		self.label = soya.label3d.Label3D(self, name)
 		self.label.size = 0.04
-		self.label.set_xyz(3.5, 0.0, 1.0)
+		self.label.set_xyz(5.5, 0.0, 1.0)
 		self.label.lit = 0
 		self.body = soya.Body(self, world.to_model())
 		self.commit = commit
@@ -33,7 +34,7 @@ class TagLabel(GitLabel):
 		
 class RemoteLabel(GitLabel):
 	def __init__(self, parent, name, commit):
-		GitLabel.__init__(self, parent, name, self.label_white, commit)
+		GitLabel.__init__(self, parent, name, self.label_blue, commit)
 		
 def cmpchilds(x, y):
 	if x.size_of_queue > y.size_of_queue:
@@ -65,7 +66,8 @@ class Commit3D(soya.Body):
 		self.vertex1 = soya.Vertex(self.faces_world, self.x-0.1, self.y-0.1, self.z-0.1)
 		self.vertex2 = soya.Vertex(self.faces_world, self.x+0.1, self.y+0.1, self.z+0.1)
 		self.labels = []
-
+		self.autoposed = False
+		
 	def size(self):
 		return 3.0
 
@@ -142,8 +144,6 @@ class Repo3D(soya.World):
 					self.labels.append(RemoteLabel(self.parent,remoteref.name, self.commit3d[remoteref.commit.hexsha]))
 		for tag in self.repo.tags:
 			self.labels.append(TagLabel(self.parent,tag.name, self.commit3d[tag.commit.hexsha]))
-		self.repo.remotes
-		self.repo.tags
 		
 	def depth(self, commit):
 		
@@ -177,10 +177,13 @@ class Repo3D(soya.World):
 	
 	def place_recurse(self, commit):
 		for child in commit.childs:
+			if child.autoposed:
+				return
+			child.autoposed = True
 			child.set_coords(commit.x, commit.y + commit.size())
-			index_free= -10.0
+			index_free= -15.0
 			while child.get_coords() in self.commitbyxy:
-				index_free += 10.0
+				index_free += 15.0
 				child.set_coords(index_free, child.y)
 			child.set_label(child.commit.message + str(child.get_coords()) + "\n" + str(child.size_of_queue))
 			self.commitbyxy[child.get_coords()] = child

@@ -50,10 +50,10 @@ sphere.filename = "sphere_blue"
 sphere.save()
 
 transparency = 1.0
-YELLOW = (0.5, 0.5, 0.0, transparency)
+YELLOW = (0.8, 0.7, 0.1, transparency)
 RED = (1.0, 0.0, 0.0, transparency)
 GREEN = (0.0,0.5, 0.0, transparency)
-BLUE = (0.0,0.0,1.0, transparency)
+BLUE = (0.1,0.1,1.0, transparency)
 WHITE = (1.0,1.0,1.0,transparency)
 
 
@@ -64,10 +64,10 @@ def create_label( color):
 	base2 = soya.Vertex(world, 1.5, 0.5,  -0.5, diffuse = color)
 	base3 = soya.Vertex(world, 1.5, -0.5, -0.5, diffuse = color)
 	base4 = soya.Vertex(world,  1.5, -0.5, 0.5, diffuse = color)
-	extremity1 = soya.Vertex(world,  4.0, 0.5, 0.5, diffuse = color)
-	extremity2 = soya.Vertex(world,  4.0, 0.5, -0.5, diffuse = color)
-	extremity3 = soya.Vertex(world,  4.0, -0.5, -0.5, diffuse = color)
-	extremity4 = soya.Vertex(world,  4.0, -0.5, 0.5, diffuse = color)
+	extremity1 = soya.Vertex(world,  10.0, 0.5, 0.5, diffuse = color)
+	extremity2 = soya.Vertex(world,  10.0, 0.5, -0.5, diffuse = color)
+	extremity3 = soya.Vertex(world,  10.0, -0.5, -0.5, diffuse = color)
+	extremity4 = soya.Vertex(world,  10.0, -0.5, 0.5, diffuse = color)
 
 	soya.Face(world, [apex, base1, base2])
 	soya.Face(world, [apex, base2, base3])
@@ -86,5 +86,7 @@ def create_label( color):
 create_label(GREEN)
 create_label(YELLOW)
 create_label(WHITE)
+create_label(BLUE)
+
 
 
