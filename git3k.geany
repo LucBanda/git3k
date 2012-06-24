@@ -18,24 +18,23 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=4701;Python;0;16;1;1;0;/home/luc/git3k/GitOverrides.py;0;4
-FILE_NAME_1=636;Python;0;16;1;1;0;/home/luc/git3k/CursorCamera.py;0;4
-FILE_NAME_2=122;Python;0;16;1;1;0;/home/luc/git3k/git3k;0;4
+current_page=1
+FILE_NAME_0=950;Python;0;16;1;1;0;/home/luc/git3k/git3k;0;4
+FILE_NAME_1=2377;Python;0;16;1;1;0;/home/luc/git3k/GitOverrides.py;0;4
+FILE_NAME_2=3501;Python;0;16;1;1;0;/home/luc/git3k/CursorCamera.py;0;4
 FILE_NAME_3=2590;Python;0;16;1;1;0;/home/luc/git3k/models_creator.py;0;4
-FILE_NAME_4=2017;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/modeling-3.py;0;4
-FILE_NAME_5=1771;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/modeling-2.py;0;4
-FILE_NAME_6=3786;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/modeling-1.py;0;4
-FILE_NAME_7=20;None;0;16;1;1;0;/home/luc/git3k/.gitignore;0;4
-FILE_NAME_8=1481;Python;0;16;1;1;0;/home/luc/git3k/gitpython/git/db.py;0;4
-FILE_NAME_9=506;Python;0;16;1;1;0;/home/luc/git3k/gitpython/git/repo/fun.py;0;4
-FILE_NAME_10=1266;Python;0;16;1;1;0;/home/luc/git3k/gitpython/git/repo/base.py;0;4
-FILE_NAME_11=5126;Python;0;16;1;1;0;/home/luc/git3k/gitpython/git/objects/commit.py;0;4
+FILE_NAME_4=0;Python;0;16;1;1;0;/home/luc/git3k/Gui.py;0;4
+FILE_NAME_5=1578;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/gui-2.py;0;4
+FILE_NAME_6=4473;Python;0;16;1;1;0;/home/luc/soya/SoyaTutorial-0.14rc1/tutorial/gui-1.py;0;4
+FILE_NAME_7=29613;Python;0;16;1;1;0;/usr/share/pyshared/soya/gui/widgets.py;0;4
 
 [VTE]
 last_dir=/home/luc/git3k
 
 [build-menu]
+EX_01_LB=launch git3k
+EX_01_CM=./git3k
+EX_01_WD=
 EX_00_LB=_Exécuter
 EX_00_CM=./git3k
 EX_00_WD=

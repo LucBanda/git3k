@@ -16,6 +16,7 @@ class GitLabel(soya.Body):
 		soya.Body.__init__(self, parent, world)
 		self.parent.x = commit.x
 		self.parent.y = commit.y
+		self.name = name
 		self.label = soya.label3d.Label3D(parent, name)
 		self.label.size = 0.04
 		self.label.set_xyz(5.5, 0.0, 1.0)
@@ -47,18 +48,30 @@ class GitLabel(soya.Body):
 		if permanent == 1:
 			self.old_model = self.model
 			
+	
+		
 class BranchLabel(GitLabel):
 	
 	def __init__(self, parent, name, commit):
 		GitLabel.__init__(self, soya.World(parent), name, self.label_green, commit)
 
+	def description(self):
+		return "Branch : " + self.name
+		
+		
 class TagLabel(GitLabel):
 	def __init__(self, parent, name, commit):
 		GitLabel.__init__(self, soya.World(parent), name, self.label_yellow, commit)
+	
+	def description(self):
+		return "Tag : " + self.name
 		
 class RemoteLabel(GitLabel):
 	def __init__(self, parent, name, commit):
 		GitLabel.__init__(self, soya.World(parent), name, self.label_blue, commit)
+	
+	def description(self):
+		return "Remote : " + self.name
 		
 def cmpchilds(x, y):
 	if x.size_of_queue > y.size_of_queue:
@@ -75,12 +88,13 @@ class Commit3D(soya.Body):
 	sphere_red = soya.World.load("sphere_red").to_model()
 	sphere_green = soya.World.load("sphere_green").to_model()
 
-	parents = []
+
 	entering_zone = 0
 	faces = []
 	
 	def __init__(self, parent, commit, faces):
 		soya.Body.__init__(self,parent, self.sphere_white)
+		self.parents = []
 		self.size_of_queue = 0
 		self.faces_world = faces
 		self.commit = commit
@@ -91,7 +105,15 @@ class Commit3D(soya.Body):
 		self.vertex2 = soya.Vertex(self.faces_world, self.x+0.1, self.y+0.1, self.z+0.1)
 		self.labels = []
 		self.autoposed = False
-	
+		
+	def description(self):
+		string  = self.commit.hexsha + "\n\n"
+		string += self.commit.message + "\n\n"
+		#~ if len(self.parents) == 1:
+			#~ string += "".join([str(diffi.diff for diffi in self.commit.tree.diff(self.parents[0].commit.tree, create_patch=True))])
+		
+		return string
+		
 	def select(self):
 		self.set_color("RED")
 		
@@ -229,7 +251,7 @@ class Repo3D(soya.World):
 			while child.get_coords() in self.commitbyxy:
 				index_free += 15.0
 				child.set_coords(index_free, child.y)
-			child.set_label(child.commit.message + str(child.get_coords()) + "\n" + str(child.size_of_queue))
+			#child.set_label(child.commit.message + str(child.get_coords()) + "\n" + str(child.size_of_queue))
 			self.commitbyxy[child.get_coords()] = child
 			self.place_recurse(child)
 	

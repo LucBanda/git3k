@@ -3,7 +3,7 @@
 
 # Imports and inits Soya.
 
-import sys, os, os.path, soya, soya.sphere
+import sys, os, os.path, soya, soya.gui
 import cerealizer
 from CursorCamera import ControlledCamera
 from GitOverrides import *
@@ -13,22 +13,35 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 
 # Creates a camera.
-
 display = soya.World()
 camera = ControlledCamera(display, soya.Point(display, 0.0,0.0,0.0))
 
 camera.back = 1000.0
+# create a Gui
+root  = soya.gui.RootLayer(None)
 
 # Creates a light.
 
 light = soya.Light(display)
 light.set_xyz(100000.0, 100000.0, 100000.0)
 
+#window = soya.gui.Window(root, u"Camera demo")
+layer = soya.gui.Layer(root)
+	
+#layer = soya.gui.Layer(root)
+
+soya.gui.CameraViewport(layer, camera)
+
+display_text = soya.gui.Text(layer, u"", color = (1.0, 1.0, 1.0, 1.0), font = soya.Font(os.path.join(soya.DATADIR, "FreeSans.ttf"), 15, 15))
+display_text.move(500,500)
+
+camera.set_text_displayer(display_text)
+
 repo = Repo3D(display, '.', 0.0)
 
 camera.set_xyz(repo.head3d.x, repo.head3d.y, 30.0)
 
 
-soya.set_root_widget(camera)
+soya.set_root_widget(root)
 
 soya.MainLoop(display).main_loop()

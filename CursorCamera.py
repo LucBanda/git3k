@@ -10,6 +10,9 @@ class ControlledCamera(soya.Camera):
 		self.move = 0
 		self.points_to = center
 		self.old_impact = None
+		
+	def set_text_displayer(self, text_displayer):
+		self.text_displayer = text_displayer
 	def begin_round(self):
 		soya.Camera.begin_round(self)
 		
@@ -81,6 +84,7 @@ class ControlledCamera(soya.Camera):
 							if self.old_impact and impact != self.old_impact:
 								self.old_impact.unselect()
 							impact.parent.select()
+							self.text_displayer.set_text(impact.parent.description())
 							self.old_impact = impact.parent
 					elif self.old_impact:
 						self.old_impact.unselect()
