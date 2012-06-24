@@ -74,13 +74,16 @@ class ControlledCamera(soya.Camera):
 					result = self.parent.raypick(self, self.vector_to(mouse))
 					if result:
 						impact, normal = result
-						if type(impact.parent) == GitOverrides.Commit3D:
+						if type(impact.parent) == GitOverrides.Commit3D or \
+						type(impact.parent) == GitOverrides.BranchLabel or \
+						type(impact.parent) == GitOverrides.TagLabel or \
+						type(impact.parent) == GitOverrides.RemoteLabel:
 							if self.old_impact and impact != self.old_impact:
-								self.old_impact.set_color('RESTORE')
-							impact.parent.set_color('RED')
+								self.old_impact.unselect()
+							impact.parent.select()
 							self.old_impact = impact.parent
 					elif self.old_impact:
-						self.old_impact.set_color('RESTORE')
+						self.old_impact.unselect()
 						self.old_impact = None
 
 

@@ -87,6 +87,7 @@ create_label(GREEN)
 create_label(YELLOW)
 create_label(WHITE)
 create_label(BLUE)
+create_label(RED)
 
 
 

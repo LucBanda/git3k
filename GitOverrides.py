@@ -5,36 +5,60 @@ import git
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 			
-class GitLabel(soya.World):
-	label_green = soya.World.load("label_green")
-	label_yellow = soya.World.load("label_yellow")
-	label_white = soya.World.load("label_white")
-	label_blue = soya.World.load("label_blue")
+class GitLabel(soya.Body):
+	label_green = soya.World.load("label_green").to_model()
+	label_yellow = soya.World.load("label_yellow").to_model()
+	label_white = soya.World.load("label_white").to_model()
+	label_blue = soya.World.load("label_blue").to_model()
+	label_red = soya.World.load("label_red").to_model()
 	
 	def __init__(self, parent, name, world, commit):
-		soya.World.__init__(self, parent)
-		self.label = soya.label3d.Label3D(self, name)
+		soya.Body.__init__(self, parent, world)
+		self.parent.x = commit.x
+		self.parent.y = commit.y
+		self.label = soya.label3d.Label3D(parent, name)
 		self.label.size = 0.04
 		self.label.set_xyz(5.5, 0.0, 1.0)
 		self.label.lit = 0
-		self.body = soya.Body(self, world.to_model())
 		self.commit = commit
 		commit.appendlabel(self)
-		self.x = commit.x
-		self.y = commit.y
+		self.old_model=self.model
 		
+	def rotate_y(self, angle):
+		self.parent.rotate_y(angle)
+			
+	def select(self):
+		self.set_color("RED")
+		
+	def unselect(self):
+		self.set_color("RESTORE")
+				
+	def set_color(self,color, permanent = 0):
+		if color == 'RESTORE':
+			self.model = self.old_model
+		if color == 'YELLOW':
+			self.model = self.label_yellow
+		elif color == 'RED':
+			self.model = self.label_red
+		elif color == 'BLUE':
+			self.model = self.label_blue
+		elif color == 'GREEN':
+			self.model = self.label_green
+		if permanent == 1:
+			self.old_model = self.model
+			
 class BranchLabel(GitLabel):
 	
 	def __init__(self, parent, name, commit):
-		GitLabel.__init__(self, parent, name, self.label_green, commit)
+		GitLabel.__init__(self, soya.World(parent), name, self.label_green, commit)
 
 class TagLabel(GitLabel):
 	def __init__(self, parent, name, commit):
-		GitLabel.__init__(self, parent, name, self.label_yellow, commit)
+		GitLabel.__init__(self, soya.World(parent), name, self.label_yellow, commit)
 		
 class RemoteLabel(GitLabel):
 	def __init__(self, parent, name, commit):
-		GitLabel.__init__(self, parent, name, self.label_blue, commit)
+		GitLabel.__init__(self, soya.World(parent), name, self.label_blue, commit)
 		
 def cmpchilds(x, y):
 	if x.size_of_queue > y.size_of_queue:
@@ -67,7 +91,27 @@ class Commit3D(soya.Body):
 		self.vertex2 = soya.Vertex(self.faces_world, self.x+0.1, self.y+0.1, self.z+0.1)
 		self.labels = []
 		self.autoposed = False
+	
+	def select(self):
+		self.set_color("RED")
 		
+	def unselect(self):
+		self.set_color("RESTORE")
+				
+	def set_color(self,color, permanent = 0):
+		if color == 'RESTORE':
+			self.model = self.old_model
+		if color == 'YELLOW':
+			self.model = self.sphere_yellow
+		elif color == 'RED':
+			self.model = self.sphere_red
+		elif color == 'BLUE':
+			self.model = self.sphere_blue
+		elif color == 'GREEN':
+			self.model = self.sphere_green
+		if permanent == 1:
+			self.old_model = self.model
+			
 	def size(self):
 		return 3.0
 
