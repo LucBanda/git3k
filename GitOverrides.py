@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-import sys, os, os.path, soya, soya.sphere
+import sys, os, os.path, soya, soya.sphere, time
 import git
 
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
@@ -125,6 +125,9 @@ class Commit3D(soya.Body):
 		
 	def description(self):
 		string  = self.commit.hexsha + "\n\n"
+		string += "author : " + str(self.commit.committer) + "\n"
+		commited_time = time.gmtime(self.commit.committed_date)
+		string += "date : " + str(time.asctime(commited_time)) + "\n\n"
 		string += self.commit.message + "\n\n"
 		#~ if len(self.parents) == 1:
 			#~ string += "".join([str(diffi.diff for diffi in self.commit.tree.diff(self.parents[0].commit.tree, create_patch=True))])
