@@ -124,11 +124,11 @@ class Commit3D(soya.Body):
 		self.autoposed = False
 		
 	def description(self):
-		string  = self.commit.hexsha + "\n\n"
-		string += "author : " + str(self.commit.committer) + "\n"
+		string  = "\n\nSHA1 : " + self.commit.hexsha + "\n\n"
+		string += "Author : " + unicode(self.commit.committer) + "\n"
 		commited_time = time.gmtime(self.commit.committed_date)
-		string += "date : " + str(time.asctime(commited_time)) + "\n\n"
-		string += self.commit.message + "\n\n"
+		string += "Date : " + str(time.asctime(commited_time)) + "\n\n"
+		string += "Message :\n"+self.commit.message + "\n\n"
 		#~ if len(self.parents) == 1:
 			#~ string += "".join([str(diffi.diff for diffi in self.commit.tree.diff(self.parents[0].commit.tree, create_patch=True))])
 		
