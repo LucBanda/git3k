@@ -30,6 +30,7 @@ class ControlledCamera(soya.Camera):
 		
 	def set_text_displayer(self, text_displayer):
 		self.text_displayer = text_displayer
+		
 	def begin_round(self):
 		soya.Camera.begin_round(self)
 		
@@ -37,7 +38,9 @@ class ControlledCamera(soya.Camera):
 		
 		for event in soya.process_event():
 			if   event[0] == soya.sdlconst.KEYDOWN:
-				if   (event[1] == soya.sdlconst.K_r):
+				if   (event[1] == soya.sdlconst.K_h):
+					self.text_displayer.set_text(" h : show this help\n r : restart \n q : quit\n ")
+				elif   (event[1] == soya.sdlconst.K_r):
 					os.system("./git3k&")
 					sys.exit()
 				elif   (event[1] == soya.sdlconst.K_q) or (event[1] == soya.sdlconst.K_ESCAPE):
